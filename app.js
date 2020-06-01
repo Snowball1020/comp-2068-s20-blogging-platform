@@ -1,13 +1,16 @@
 
 const express = require("express")
 const app = express()
+app.use(express.static("public"))
 
 const path = require("path")
+
 
 //Set our views directories
 
 app.set("views", path.join(__dirname, "views"))
 app.set("view engine", "ejs")
+
 
 const routes = require("./routes.js")
 
