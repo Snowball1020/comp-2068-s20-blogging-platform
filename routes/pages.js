@@ -1,4 +1,4 @@
-console.log("exported the module")
+
 const { home, about, contact } = require("../controllers/PagesController")
 
 module.exports = router => {
