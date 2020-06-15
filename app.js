@@ -33,10 +33,34 @@ const bodyParser = require("body-parser")
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
+//setup our session
+const session = require("express-session")
+app.use(session({
+    secret: "any salty secrets here",
+    resave: true,
+    saveUninitialized: false
+}))
+
+//setup flash notification
+
+const flash = require("connect-flash")
+app.use(flash())
+app.use("/", (req, res, next) => {
+
+    res.locals.pageTitle = "Untitled";
+    //  console.log(req.flash())
+    //passing along flash messages
+    res.locals.flash = req.flash();
+    res.locals.formData = req.session.formData || {};
+    req.session.formData = {};
+    console.log(res.locals.flash)
+    next();
+})
+
 const routes = require("./routes.js")
 
 app.use("/", routes)
 
 //start our server
-
-app.listen(process.env.PORT || 3000, (port) => console.log(`Listening on port ${port}`))
+const port = process.env.PORT || 3000;
+app.listen(port, () => console.log(`Listening on port ${port}`))
