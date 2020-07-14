@@ -5,16 +5,6 @@ app.use(express.static("public"))
 require("dotenv").config()
 const path = require("path")
 
-
-//Set our views directories
-
-app.set("views", path.join(__dirname, "views"))
-app.set("view engine", "ejs")
-
-app.use("/css", express.static("assets/css"))
-app.use("/images", express.static("assets/images"))
-app.use("/javascript", express.static("assets/javascript"))
-
 //mongo acceess
 const mongoose = require("mongoose")
 mongoose.connect(process.env.DB_URI, {
@@ -28,18 +18,42 @@ mongoose.connect(process.env.DB_URI, {
 }).then(() => console.log("DB CONNECTED "))
     .catch(err => console.error(`Error:${err}`));
 
+
 //implement body parser
 const bodyParser = require("body-parser")
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
-//setup our session
+
+
+const passport = require("passport")
 const session = require("express-session")
 app.use(session({
-    secret: "any salty secrets here",
+    secret: "any salty secret here",
     resave: true,
     saveUninitialized: false
 }))
+
+//setting up passport
+app.use(passport.initialize())
+app.use(passport.session())
+const User = require("./models/User")
+passport.use(User.createStrategy())
+passport.serializeUser(User.serializeUser())
+passport.deserializeUser(User.deserializeUser())
+
+
+
+//Set our views directories
+
+app.set("views", path.join(__dirname, "views"))
+app.set("view engine", "ejs")
+
+app.use("/css", express.static("assets/css"))
+app.use("/images", express.static("assets/images"))
+app.use("/javascript", express.static("assets/javascript"))
+
+
 
 //setup flash notification
 
@@ -53,7 +67,11 @@ app.use("/", (req, res, next) => {
     res.locals.flash = req.flash();
     res.locals.formData = req.session.formData || {};
     req.session.formData = {};
-    console.log(res.locals.flash)
+
+    //authenticate helper
+    res.locals.authorized = req.isAuthenticated();
+
+    if (res.locals.authorized) res.locals.email = req.session.passport.user
     next();
 })
 

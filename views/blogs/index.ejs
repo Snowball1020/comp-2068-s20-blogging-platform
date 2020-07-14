@@ -11,7 +11,13 @@
 
             <div class="card my-3">
                 <div class="card-header clearfix">
-                        <h5 class="card-title float-left"><%= blog.title%></h5>
+                    <div class="float-left">
+                    <h5 class="card-title"><%= blog.title%></h5>
+                    <% if(typeof blog.user !== "undefined") { %>   
+                    <small>~ <%= blog.user.fullname %></small>
+                        <% } %>
+                    </div>
+
                         <div class="float-right">
                             <small><%= blog.createdAt.toLocaleString() %></small>
                         </div>
@@ -21,18 +27,21 @@
                       <a href="/blogs/<%= blog.id%>">More...</a>
                     </div>
 
-                    <div class="card-footer">
-                        <a href="/blogs/<%= blog.id %>/edit"><i class="fa fa-edit"></i></a>
-                        &nbsp;/&nbsp;
-
-                        <form class="form-inline" action="/blogs/delete" method="POST"
-                        onsubmit="return confirm('Are you sure you want to delete ??')">
-                            <input type="hidden" value="<%= blog.id %>" name="id">
-                            <button type="submit delete" style="border: none; background: none; color:#007bff;">
-                                <i class="fa fa-trash"></i>
-                            </button>
-                        </form>
-                    </div>
+                    <% if (authorized && (typeof blog.user === "undefined" || blog.user.email === email)){%>
+                        <div class="card-footer">
+                            <a href="/blogs/<%= blog.id %>/edit"><i class="fa fa-edit"></i></a>
+                            &nbsp;/&nbsp;
+    
+                            <form class="form-inline" action="/blogs/delete" method="POST"
+                            onsubmit="return confirm('Are you sure you want to delete ??')">
+                                <input type="hidden" value="<%= blog.id %>" name="id">
+                                <button type="submit delete" style="border: none; background: none; color:#007bff;">
+                                    <i class="fa fa-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+                            
+                    <% } %>
                   </div>
 
         <% } %>
