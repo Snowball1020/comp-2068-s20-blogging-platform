@@ -13,14 +13,11 @@ exports.index = async (req, res) => {
                 updatedAt: "desc"
             });
 
-        res.render(`${viewPath}/index`, {
-            pageTitle: "Archive",
-            blogs: blogs
-        })
+        res.status(200).json(blogs);
+
 
     } catch (error) {
-        req.flash("danger", `There was an error: ${error}`)
-        res, redirect("/");
+        res.status(400).json({ message: "There was an error fetching blogs", error })
     }
 }
 
@@ -55,12 +52,11 @@ exports.create = async (req, res) => {
         const { user: email } = req.session.passport;
         const user = await User.findOne({ email: email })
         const blog = await Blog.create({ user: user._id, ...req.body })
-        req.flash("success", "Blog created successfuly")
-        res.redirect(`/blogs/${blog.id}`)
+
+        res.status(200).json(blog)
+
     } catch (error) {
-        req.flash("danger", `There was an error creating this blog: ${error}`)
-        req.session.formData = req.body;
-        res.redirect("/blogs/new")
+        res.status(400).json({ message: "There was an error creating the blog post", error })
     }
 
 }

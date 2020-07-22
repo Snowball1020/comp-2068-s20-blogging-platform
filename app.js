@@ -42,30 +42,6 @@ passport.use(User.createStrategy())
 passport.serializeUser(User.serializeUser())
 passport.deserializeUser(User.deserializeUser())
 
-//setting up passport jwt
-
-const JwtStrategy = require("passport-jwt").Strategy;
-const opts = {};
-opts.jwtFromRequest = function (req) {
-    const token = (req && req.cookies) ? req.cookies
-    ["token"] : null
-    return token
-}
-
-opts.secretOrKey = "superSecretSaltKey"
-
-passport.use("jwt", new JwtStrategy(opts, function (jwt_payload, done) {
-    User.findOne({ id: jwt_payload.sub }, function (err, user) {
-        if (err) return done(err, false);
-        if (user) return done(null, user);
-        return done(null, false)
-    })
-}));
-
-
-
-
-
 //Set our views directories
 
 app.set("views", path.join(__dirname, "views"))

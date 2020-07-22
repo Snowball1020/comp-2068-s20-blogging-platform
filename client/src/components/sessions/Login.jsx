@@ -1,20 +1,31 @@
 import React from "react";
 import {useState} from "react";
 import Axios from "axios";
-import {Form, Container, Button } from "react-bootstrap"
+import {Form, Container} from "react-bootstrap"
+import {Redirect} from "react-router-dom"
 
-const Login = props => {
+const Login = ({setUser}) => {
 
     const [inputs, setInputs] = useState({
         email:"",
         password:""
     })
 
+    const [redirect, setRedirect] = useState(false)
+
     const handleSubmit = async event => {
         event.preventDefault()
 
         const resp = await Axios.post("http://localhost:4000/authenticate",
             inputs)
+
+            if(resp.status === 200){
+                setUser(resp.data.user)
+                setRedirect(true)
+            }else{
+
+            }
+
             console.log(resp)
     }
 
@@ -24,6 +35,8 @@ const Login = props => {
         setInputs(inputs => ({...inputs,[name]:value}))
         console.log(inputs)
     }
+
+    if(redirect) return <Redirect to="/blogs" />
 
     return(
 
