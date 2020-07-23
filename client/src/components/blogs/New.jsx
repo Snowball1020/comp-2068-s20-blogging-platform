@@ -51,7 +51,6 @@ const New = function () {
             ...inputs,
             [name]:value
         }))
-        console.log(inputs)
 
     }
 
