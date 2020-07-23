@@ -1,9 +1,12 @@
 import React, {useEffect, useState} from "react";
 import {Container} from "react-bootstrap"
 import Axios from "axios"
+import {toast} from "react-toastify"
+import {Link} from "react-router-dom"
 
 
-const Index = function(){
+
+const Index = function({user}){
 
     const [blogs, setBlogs] = useState([]);
 
@@ -15,10 +18,27 @@ const Index = function(){
 
     const getBlogs = async () => {
         
-        const blogsResp = await Axios.get("http://localhost:4000/blogs");
+        const blogsResp = await Axios.get("/api/blogs");
         if(blogsResp.status === 200) setBlogs(blogsResp.data)        
 
     }
+
+    const deleteBlog = async blog => {
+
+        try{
+            const resp = await Axios.post("/api/blogs/delete",{
+                id:blog._id
+            })
+            if(resp.status === 200) toast("The blog was deleted successfullt",{type:toast.TYPE.SUCCESS})
+            await getBlogs()
+
+        }catch(error) {
+            toast("There was an error deleting the blog",
+            {type:toast.TYPE.ERROR})
+        }
+    
+    }
+
 
     return(
      <Container className="my-5">
@@ -36,10 +56,36 @@ const Index = function(){
                                 {blog.title}
                             </h5>
                             {blog.user ? (
-                                <small>~{blog.user.fulltime}</small>
+                                <small>~{blog.user.fullname}</small>
                             ) : null}
                         </div>
+
+                        <div className="float-right">
+                        <small>{blog.updatedAt}</small>
+                        </div>
                     </div>
+
+                    <div className="card-body">
+                            <p className="card-text">
+                            {blog.synopsis}
+                            </p>
+                    </div>
+                    {user ? (
+                        <div className="card-footer">
+                            <Link to={{
+                                pathname:"/blogs/edit",
+                                state:{
+                                    id:blog._id
+                                }
+                            }}>
+                                <i className="fa fa-edit"></i>
+                            </Link>
+
+                            <button type="button" onClick={()=>deleteBlog(blog)}>
+                                <i className="fa fa-trash"></i>
+                            </button>
+                        </div>
+                    ) : null}
                 </div>
             ))}
         </div>

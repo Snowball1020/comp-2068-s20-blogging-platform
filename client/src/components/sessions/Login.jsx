@@ -3,6 +3,7 @@ import {useState} from "react";
 import Axios from "axios";
 import {Form, Container} from "react-bootstrap"
 import {Redirect} from "react-router-dom"
+import {toast} from "react-toastify"
 
 const Login = ({setUser}) => {
 
@@ -15,18 +16,30 @@ const Login = ({setUser}) => {
 
     const handleSubmit = async event => {
         event.preventDefault()
+        try{
 
-        const resp = await Axios.post("http://localhost:4000/authenticate",
-            inputs)
+            const resp = await Axios.post("/api/authenticate",
+                inputs)
+            
+                if(resp.status === 200){
+                    setUser(resp.data.user)
+                    toast("You have logged in successfully!",{
+                        type: toast.TYPE.SUCCESS
+                    })
+                    setRedirect(true)
+                }else{
+                    toast("There was an issue logging in, please check your credentials",{
+                        type: toast.TYPE.ERROR
+                    })
+    
+                }
 
-            if(resp.status === 200){
-                setUser(resp.data.user)
-                setRedirect(true)
-            }else{
-
+            }catch{
+                toast("There was an issue logging in, please check your credentials",{
+                    type: toast.TYPE.ERROR
+                })            
             }
 
-            console.log(resp)
     }
 
     const handleInputChange = event => {

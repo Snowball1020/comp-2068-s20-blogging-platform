@@ -26,15 +26,9 @@ exports.show = async (req, res) => {
     try {
         const blog = await Blog.findById(req.params.id)
             .populate("user")
-        res.render(`${viewPath}/show`, {
-            pageTitle: blog.title,
-            blog: blog
-        })
-
+        res.status(200).json(blog)
     } catch (error) {
-        req.flash("danger", `There was an error: ${error}`)
-        res.redirect("/blogs");
-
+        res.status(400).json({ message: "There was an error fetching the blog" })
     }
 
 }
@@ -82,8 +76,6 @@ exports.edit = async (req, res) => {
 
 exports.update = async (req, res) => {
 
-
-
     try {
 
         const { user: email } = req.session.passport;
@@ -118,16 +110,12 @@ exports.delete = async (req, res) => {
     try {
 
         await Blog.deleteOne({ _id: req.body.id })
-        req.flash("success", "Blog Deleted successfuly")
-        res.redirect(`/blogs`)
+        res.status(200).json({ message: "Yay" })
 
 
 
     } catch (error) {
-        req.flash("danger", `There was an error: ${error}`)
-
-        res, redirect(`/blogs`);
-
+        res.status(400).json({ message: "Error deleting a blog" })
     }
 
 }

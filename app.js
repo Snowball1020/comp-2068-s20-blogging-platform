@@ -73,15 +73,23 @@ app.use("/", (req, res, next) => {
     next();
 })
 
+
 const routes = require("./routes.js")
 
-app.use("/", routes)
+app.use("/api", routes)
 
 app.get("/test", (req, res) => {
     res.status(200).json({ message: "Hello World" })
 })
 
 
+app.use(express.static(path.join(__dirname, "client/build")));
+app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname + "/client/build/index.html"))
+})
+
+
+/*
 const clientRoot = path.join(__dirname, "/client/build")
 app.use((req, res, next) => {
     if (req.method === 'GET' && req.accepts('html') && !req.is('json')
@@ -89,6 +97,8 @@ app.use((req, res, next) => {
         res.sendfile("index.html", { clientRoot });
     } else next();
 })
+*/
+
 
 //start our server
 const port = process.env.PORT || 4000;
